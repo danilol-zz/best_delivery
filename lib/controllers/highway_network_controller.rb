@@ -3,7 +3,14 @@ class BestDelivery::Controllers::HighwayNetworkController < Sinatra::Base
   include HttpStatusCodes
 
   post '/' do
-    puts "HELLOWORLD"
+    content_type :json
+    highway_network_params = parse_json
+
+    halt 400 if highway_network_params.blank?
+
+    highway_network = BestDelivery::HighwayNetwork.new(highway_network_params)
+
+    halt 400, {errors: highway_network.errors}.to_json if highway_network.invalid?
   end
 
   POST_BODY = 'rack.input'.freeze

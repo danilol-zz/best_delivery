@@ -18,8 +18,8 @@ FactoryGirl.define do
 
   factory :highway_network, class: BestDelivery::HighwayNetwork do |f|
     f.description       'Primeira Malha'
-    f.source_point       FactoryGirl.create(:delivery_point)
-    f.destination_point  FactoryGirl.create(:delivery_point, description: 'Distribuidor São Paulo', city: 'São Paulo', state: 'SP')
+    f.source_point       { FactoryGirl.create(:delivery_point) }
+    f.destination_point  { FactoryGirl.create(:delivery_point, description: 'Distribuidor São Paulo', city: 'São Paulo', state: 'SP') }
     f.distance          10
   end
 end
