@@ -1,10 +1,13 @@
 # -*- encoding : utf-8 -*-                                                                                    |" Press <F1> for help
 FactoryGirl.define do
   factory :user, class: BestDelivery::User do
-    name    "Maria Antonieta Sousa"
-    cpf     "75210981452"
-    email   'teste@teste.com.br'
-    dob     '11/03/1987'
+    _id        '5404af3c8ae0047a32000003'
+    name       'Maria Antonieta Sousa'
+    cpf        '75210981452'
+    email      'teste@teste.com.br'
+    dob        '11/03/1987'
+    created_at DateTime.parse('2012/06/06 11:11:11')
+    updated_at DateTime.parse('2012/06/06 12:11:11')
   end
 
   factory :delivery_point, class: BestDelivery::DeliveryPoint do |f|

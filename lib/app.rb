@@ -4,8 +4,10 @@ class BestDelivery::App < Sinatra::Base
 
   get '/' do
     rels = [
-      { rel: 'user', href: '/user', type: 'application/best_delivery.user+json;charset=utf-8'},
+      { rel: 'user',            href: '/user',            type: 'application/best_delivery.user+json;charset=utf-8'},
+      { rel: 'highway_network', href: '/highway_network', type: 'application/best_delivery.highway_network+json;charset=utf-8'},
     ]
+
     { best_delivery: rels }.to_json
 
     etag Digest::MD5.hexdigest rels.to_s

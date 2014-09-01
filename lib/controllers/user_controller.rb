@@ -17,6 +17,23 @@ class BestDelivery::Controllers::UserController < Sinatra::Base
     created user.href
   end
 
+  get '/' do
+    users = BestDelivery::User.all
+    users.to_json
+  end
+
+  get '/:id' do
+    begin
+      user = BestDelivery::User.find(params[:id])
+    rescue
+      not_found
+    end
+
+    user.to_json
+  end
+
+  private
+
   POST_BODY = 'rack.input'.freeze
 
   def parse_json

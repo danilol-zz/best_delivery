@@ -32,7 +32,8 @@ module BestDelivery
   def self.route_map
     map = {
       '/'                => BestDelivery::App,
-      '/user'            => BestDelivery::Controllers::UserController
+      '/user'            => BestDelivery::Controllers::UserController,
+      '/highway_network' => BestDelivery::Controllers::HighwayNetworkController
     }
     map
   end

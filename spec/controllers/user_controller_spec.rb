@@ -2,7 +2,6 @@
 require 'spec_helper'
 
 describe BestDelivery::Controllers::UserController do
-  #it_should_behave_like 'an etag', :user, '/user/:id'
   context 'create' do
 
     subject { last_response }
@@ -75,143 +74,60 @@ describe BestDelivery::Controllers::UserController do
     end
   end
 
-  #context 'create' do
-    #it "should save a complete user" do
-      #user = FactoryGirl.attributes_for :user, address: FactoryGirl.attributes_for(:address)
-      #post '/user', user.to_json
-      #last_response.status.should == 201
+  context 'GET a user by its id' do
+    let(:user_id) { 'C01DC0FFEE' }
 
-      #get last_response['location']
-      #last_response.should be_ok
+    context 'non-existing user' do
+      before do
+        BestDelivery::User.should_receive(:find).with(user_id).and_raise(Mongoid::Errors::DocumentNotFound.allocate)
+      end
 
-      #saved_user = JSON.parse(last_response.body)['resource']
+      it 'returns a 404' do
+        get "/user/#{user_id}"
+        last_response.status.should == 404
+      end
+    end
 
-      #saved_user['name'].should == user[:name]
-      #saved_user['email'].should == user[:email]
-      #saved_user['cpf'].should == user[:cpf]
+    context 'existing user' do
+      let(:user) { FactoryGirl.build(:user) }
 
-      #[:street_line1, :street_line2, :street_number, :neighbourhood, :postal_code, :city, :state].each do |field|
-        #saved_user['address'][field.to_s].should == user[:address][field]
-      #end
-    #end
+      before { BestDelivery::User.should_receive(:find).with(user_id).and_return(user) }
 
-    #it 'should save an ess imported user' do
-      #imported_data = {
-        #gender: 'M',
-        #rg: '1234567890',
-        #inscricao_estadual: '1234567890',
-        #user_type: 'F',
-        #date_of_birth: '28/02/1986',
-        #phone_number_area_code: '51',
-        #phone_number: '1234-5678',
-        #branch_line_number: '51',
-        #cellphone_number: '12345-6789',
-        #deactivated: false,
-        #deactivation_date: DateTime.parse('2012/06/06').to_s,
-        #last_version_id: '1',
-        #version: '1',
-        #created_at: DateTime.parse('2012/06/06').to_s,
-        #updated_at: DateTime.parse('2012/06/06').to_s
-      #}
+      it 'returns the JSON resource of that user' do
+        get "/user/#{user_id}"
+        last_response.should be_ok
 
-      #user = FactoryGirl.attributes_for(:user, {
-        #address: FactoryGirl.attributes_for(:address),
-        #external_id: 'ess_user_id',
-        #ess_imported_data: imported_data
-      #})
+        resource = JSON.parse(last_response.body)
+        resource['name'].should  == 'Maria Antonieta Sousa'
+        resource['cpf'].should   == '75210981452'
+        resource['email'].should == 'teste@teste.com.br'
+        resource['dob'].should   == '1987-03-11'
+      end
+    end
+  end
 
-      #post '/user', user.to_json
-      #last_response.status.should == 201
+  context 'GET users list' do
+    context 'non-existing user' do
+      before { BestDelivery::User.should_receive(:all).and_return([]) }
 
-      #get last_response['location']
-      #last_response.should be_ok
+      it 'returns an empty array' do
+        get "/user"
+        last_response.should be_ok
+        last_response.body.should == "[]"
+      end
+    end
 
-      #saved_user = JSON.parse(last_response.body)['resource']
-      #saved_user['external_id'].should == 'ess_user_id'
-      #imported_data.keys.each do |field|
-        #saved_user['ess_imported_data'][field.to_s].should == user[:ess_imported_data][field]
-      #end
-    #end
+    context 'existing user' do
+      let(:user) { FactoryGirl.create(:user) }
 
-    #it "should save salt when importing user from iba1" do
-      #user = FactoryGirl.attributes_for :user, salt: 'salt_from_iba_one', ess_imported_data: { gender: 'M' }
-
-      #post '/user', user.to_json
-
-      #last_response.status.should == 201
-
-      #Profiles::User.last.salt.should == 'salt_from_iba_one'
-    #end
-
-    #it "should not save the card for complete user" do
-      #user = FactoryGirl.attributes_for :user, address: FactoryGirl.attributes_for(:address), card: FactoryGirl.build(:card)
-      #post '/user', user.to_json
-      #last_response.status.should == 201
-
-      #Profiles::User.last.card.should be_nil
-    #end
-
-    #context 'with errors on the mongo model' do
-      #it "should return the model errors if any" do
-        #user_attributes = FactoryGirl.attributes_for(:adult_user, password: 'f')
-
-        #post '/user', user_attributes.to_json
-        #last_response.status.should == 422
-
-        #response_hash = JSON.parse(last_response.body)
-
-        #returned_user = response_hash['resource']
-        #returned_user['errors']['password'].should == ["A senha deve conter pelo menos 8 (oito) caracteres, incluindo letras, números e caracteres especiais tais como #, !, @"]
-        #returned_user['password'].should == nil
-      #end
-    #end
-
-    #context 'with errors on the client model' do
-      #it "should return the model errors if any" do
-        #user_attributes = FactoryGirl.attributes_for(:adult_user)
-        #user_attributes[:name] = nil
-
-        #post '/user', user_attributes.to_json
-        #last_response.status.should == 422
-
-        #response_hash = JSON.parse(last_response.body)
-        #returned_user = response_hash['resource']
-
-        #returned_user['errors']['name'].should_not be_nil
-        #returned_user['errors']['name'].should_not be_empty
-      #end
-    #end
-
-    #it "should use only user properties to create a new User" do
-      #user_attributes = FactoryGirl.attributes_for(:user)
-
-      #post '/user', user_attributes.to_json
-
-      #user = Profiles::User.last
-      #last_response.status.should == 201
-      #last_response.location.should == "/user/#{user._id}"
-
-      #last_response.body.should be_empty
-    #end
-
-    #it 'should respond with a 422 if no user params are provided' do
-      #post '/user', {}.to_json
-      #last_response.status.should == 422
-    #end
-
-    #context 'external_id duplication' do
-      #it 'should return a 409 if a user is imported with existing external id' do
-        #Profiles.config.redis.set(:last_ess_user_id, 1)
-        #user = FactoryGirl.create(:user, name: 'Booga Booga',external_id: '100')
-        #another_user = FactoryGirl.attributes_for(:user, name: 'Yola ola',external_id: '100')
-
-        #post '/user', another_user.to_json
-        #last_response.status.should == 409
-        #last_response.body.should == {errors: I18n.t('external_id.present')}.to_json
-        #Profiles.config.redis.get(:last_ess_user_id).should == "1"
-      #end
-    #end
-  #end
+      before { BestDelivery::User.should_receive(:all).and_return([user]) }
+      it 'returns the JSON resource of that user' do
+        get "/user"
+        last_response.should be_ok
+        last_response.body.should == "[{\"_id\":\"5404af3c8ae0047a32000003\",\"cpf\":\"75210981452\",\"created_at\":\"2012-06-06T08:11:11-03:00\",\"dob\":\"1987-03-11\",\"email\":\"teste@teste.com.br\",\"name\":\"Maria Antonieta Sousa\",\"updated_at\":\"2012-06-06T09:11:11-03:00\"}]"
+      end
+    end
+  end
   def app
     Rack::URLMap.new BestDelivery.route_map
   end
