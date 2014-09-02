@@ -10,7 +10,13 @@ class BestDelivery::Controllers::HighwayNetworkController < Sinatra::Base
 
     highway_network = BestDelivery::HighwayNetwork.new(highway_network_params)
 
-    halt 400, {errors: highway_network.errors}.to_json if highway_network.invalid?
+    if highway_network.invalid?
+      halt 409, {errors: highway_network.errors}.to_json if highway_network.errors[:description].include?("is already taken")
+      halt 400, {errors: highway_network.errors}.to_json if highway_network.invalid?
+    else
+      highway_network.save
+      created highway_network.id
+    end
   end
 
   POST_BODY = 'rack.input'.freeze

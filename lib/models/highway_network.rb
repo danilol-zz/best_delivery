@@ -23,10 +23,18 @@ class BestDelivery::HighwayNetwork
   private
 
   def delivery_point
-    point = BestDelivery::DeliveryPoint.where(description: source_point.description).first
-    self.errors.add(:source_point, "Origem não cadastrada!!") unless point
+    if source_point.is_a?(BestDelivery::DeliveryPoint)
+      point = BestDelivery::DeliveryPoint.where(description: source_point.description).first
+      self.errors.add(:source_point, "Origem não cadastrada!!") unless point
+    else
+      self.errors.add(:source_point, "Origem inválida!!")
+    end
 
-    point = BestDelivery::DeliveryPoint.where(description: destination_point.description).first
-    self.errors.add(:destination_point, "Destino não cadastrado!!") unless point
+    if destination_point.is_a?(BestDelivery::DeliveryPoint)
+      point = BestDelivery::DeliveryPoint.where(description: destination_point.description).first
+      self.errors.add(:destination_point, "Destino não cadastrado!!") unless point
+    else
+      self.errors.add(:destination_point, "Destino inválido!!")
+    end
   end
 end
