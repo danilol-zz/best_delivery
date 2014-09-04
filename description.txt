@@ -1,15 +1,10 @@
-#site
-EU como usuário do sistema
-QUERO me cadastrar
-PARA poder utilizar o site
+##Iniciar a API
 
-EU como usuário do sistema
-QUERO cadastrar as minhas rotas
-PARA poder manter o realizar entregas até elas
+bundle exec rackup
 
-EU como usuário do sistema
-QUERO saber qual a rota mais econômica
-PARA realizar minhas entregas
+Documentação dos endpoints e exemplos de CURL no Readme.md
+
+
 
 
 #GingaOne - Prova - Processo Seletivo Walmart

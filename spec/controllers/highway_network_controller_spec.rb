@@ -18,7 +18,7 @@ describe BestDelivery::Controllers::HighwayNetworkController do
           let(:source)      { FactoryGirl.create(:delivery_point) }
           let(:destination) { FactoryGirl.create(:delivery_point, description: 'XIQUITONES', city: 'Rio de Janeiro', state: 'RJ') }
 
-          let(:highway_network_params) { { source_point: source, destination_point: destination, distance: 20 } }
+          let(:highway_network_params) { { source_point: source.description, destination_point: destination.description, distance: 20 } }
 
           before { post '/highway_network', highway_network_params.to_json }
 
@@ -30,7 +30,7 @@ describe BestDelivery::Controllers::HighwayNetworkController do
           let(:source)      { FactoryGirl.create(:delivery_point) }
           let(:destination) { FactoryGirl.create(:delivery_point, description: 'XIQUITONES', city: 'Rio de Janeiro', state: 'RJ') }
 
-          let(:highway_network_params) { { description: nil, source_point: source, destination_point: destination, distance: 20 } }
+          let(:highway_network_params) { { description: nil, source_point: source.description, destination_point: destination.description, distance: 20 } }
 
           before { post '/highway_network', highway_network_params.to_json }
 
@@ -42,18 +42,18 @@ describe BestDelivery::Controllers::HighwayNetworkController do
           let(:source)      { FactoryGirl.create(:delivery_point) }
           let(:destination) { FactoryGirl.create(:delivery_point, description: 'XIQUITONES', city: 'Rio de Janeiro', state: 'RJ') }
 
-          let(:highway_network_params) { { description: 'test', source_point: "teste", destination_point: destination, distance: 20 } }
+          let(:highway_network_params) { { description: 'test', source_point: "teste", destination_point: destination.description, distance: 20 } }
 
           before { post '/highway_network', highway_network_params.to_json }
 
           its(:status) { should eq 400 }
-          its(:body)   { should eq "{\"errors\":{\"source_point\":[\"can't be blank\",\"Origem inválida!!\"]}}" }
+          its(:body)   { should eq "{\"errors\":\"Ponto não encontrado\"}" }
         end
 
         context 'conflict' do
           let(:source)          { FactoryGirl.create(:delivery_point) }
           let(:destination)     { FactoryGirl.create(:delivery_point, description: 'XIQUITONES', city: 'Rio de Janeiro', state: 'RJ') }
-          let(:highway_network_params) { { description: 'Primeira Malha', source_point: source, destination_point: destination, distance: 10 } }
+          let(:highway_network_params) { { description: 'Primeira Malha', source_point: source.description, destination_point: destination.description, distance: 10 } }
 
           before do
             highway_network = FactoryGirl.create(:highway_network, source_point: source, destination_point: destination)
@@ -69,7 +69,7 @@ describe BestDelivery::Controllers::HighwayNetworkController do
     context 'success' do
       let(:source)          { FactoryGirl.create(:delivery_point) }
       let(:destination)     { FactoryGirl.create(:delivery_point, description: 'XIQUITONES', city: 'Rio de Janeiro', state: 'RJ') }
-      let(:highway_network_params) { { description: 'Primeira Malha', source_point: source, destination_point: destination, distance: 10 } }
+      let(:highway_network_params) { { description: 'Primeira Malha', source_point: source.description, destination_point: destination.description, distance: 10 } }
 
       before { post '/highway_network', highway_network_params.to_json }
 

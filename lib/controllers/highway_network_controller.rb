@@ -8,6 +8,16 @@ class BestDelivery::Controllers::HighwayNetworkController < Sinatra::Base
 
     halt 400 if highway_network_params.blank?
 
+    begin
+      source      = BestDelivery::DeliveryPoint.find_by(description: highway_network_params["source_point"])
+      destination = BestDelivery::DeliveryPoint.find_by(description: highway_network_params["destination_point"])
+    rescue
+      halt 400, {errors: "Ponto não encontrado"}.to_json
+    end
+
+    highway_network_params[:source_point] = source
+    highway_network_params[:destination_point] = destination
+
     highway_network = BestDelivery::HighwayNetwork.new(highway_network_params)
 
     if highway_network.invalid?
@@ -15,7 +25,7 @@ class BestDelivery::Controllers::HighwayNetworkController < Sinatra::Base
       halt 400, {errors: highway_network.errors}.to_json if highway_network.invalid?
     else
       highway_network.save
-      created highway_network.id
+      created highway_network.id.to_s
     end
   end
 
@@ -62,7 +72,7 @@ class BestDelivery::Controllers::HighwayNetworkController < Sinatra::Base
     value = calculate(params[:valor_litro].to_f, params[:consumo_caminhao].to_f, distance)
 
     headers = { "Content-Type" => "text/html" }
-    [200, headers, ["Valor Consumo R$ #{value.to_s} Melhor Rota #{best_route}"]]
+    [200, headers, ["Valor Consumo R$ #{value.round(2).to_s} Melhor Rota #{best_route}"]]
   end
 
   private
