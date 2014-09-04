@@ -18,8 +18,7 @@ class BestDelivery::Controllers::UserController < Sinatra::Base
   end
 
   get '/' do
-    users = BestDelivery::User.all
-    users.to_json
+    BestDelivery::User.all.to_json
   end
 
   get '/:id' do

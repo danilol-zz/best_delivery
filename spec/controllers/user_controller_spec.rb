@@ -106,7 +106,7 @@ describe BestDelivery::Controllers::UserController do
     end
   end
 
-  context 'GET users list' do
+  describe 'GET users list' do
     context 'non-existing user' do
       before { BestDelivery::User.should_receive(:all).and_return([]) }
 
@@ -128,6 +128,7 @@ describe BestDelivery::Controllers::UserController do
       end
     end
   end
+
   def app
     Rack::URLMap.new BestDelivery.route_map
   end
